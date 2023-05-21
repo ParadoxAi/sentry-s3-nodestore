@@ -15,6 +15,7 @@ from uuid import uuid4
 import zlib
 
 import boto3
+from botocore.config import Config
 
 from sentry.nodestore.base import NodeStorage
 
@@ -31,9 +32,15 @@ def retry(attempts, func, *args, **kwargs):
 class S3NodeStorage(NodeStorage):
 
     def __init__(self, bucket_name=None, endpoint=None, region='eu-west-1', aws_access_key_id=None, aws_secret_access_key=None, max_retries=3):
+        config = Config(
+            retries = {
+                'max_attempts': 10,
+                'mode': 'standard'
+            }
+        )
         self.max_retries = max_retries
         self.bucket_name = bucket_name
-        self.client = boto3.client('s3', endpoint_url=endpoint, aws_access_key_id = aws_access_key_id, aws_secret_access_key = aws_secret_access_key)
+        self.client = boto3.client('s3', config=config, endpoint_url=endpoint, aws_access_key_id = aws_access_key_id, aws_secret_access_key = aws_secret_access_key)
 
     def delete(self, id):
         """
