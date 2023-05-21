@@ -34,8 +34,7 @@ class S3NodeStorage(NodeStorage):
     def __init__(self, bucket_name=None, endpoint=None, region='eu-west-1', aws_access_key_id=None, aws_secret_access_key=None, max_retries=3):
         config = Config(
             retries = {
-                'max_attempts': 10,
-                'mode': 'standard'
+                'max_attempts': 20,
             }
         )
         self.max_retries = max_retries
