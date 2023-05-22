@@ -8,7 +8,8 @@ sentry_s3_nodestore.backend
 
 from __future__ import absolute_import
 
-import simplejson
+import logging
+import random
 from base64 import urlsafe_b64encode
 from time import sleep
 from uuid import uuid4
@@ -19,13 +20,15 @@ from botocore.config import Config
 
 from sentry.nodestore.base import NodeStorage
 
+logger = logging.getLogger(__name__)
 
 def retry(attempts, func, *args, **kwargs):
     for _ in range(attempts):
         try:
             return func(*args, **kwargs)
         except Exception as err:
-            sleep(0.1)
+            logger.debug("Failed to put object (%s) to (%s).", kwargs.get('Key'), kwargs.get('Bucket'))
+            sleep(random.uniform(0.1, 0.4))
             raise
     raise
 
